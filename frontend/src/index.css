@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #F1641E;
+  --color-secondary: #F7F5F2;
+  --color-accent: #051822;
+  --color-light: #FAFAF8;
+  --color-border: #E5E5E5;
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md-soft: 0 4px 12px rgba(0, 0, 0, 0.10);
+  --shadow-lg-soft: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+@layer base {
+  body {
+    @apply bg-white;
+    color: #051822;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1 {
+    @apply text-4xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-2xl font-semibold;
+  }
+
+  h4 {
+    @apply text-xl font-semibold;
+  }
+
+  h5 {
+    @apply text-lg font-semibold;
+  }
+
+  button {
+    @apply transition-colors duration-200;
+  }
+
+  a {
+    color: #F1641E;
+    @apply hover:opacity-80 transition-colors;
+  }
+}
+
+@layer components {
+  .container-max {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2.5 rounded-lg font-medium transition-colors;
+    background-color: #F1641E;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    @apply opacity-90;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 rounded-lg font-medium transition-colors;
+    background-color: #F7F5F2;
+    color: #051822;
+  }
+
+  .btn-secondary:hover {
+    @apply opacity-80;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 rounded-lg transition-colors;
+    color: #051822;
+  }
+
+  .btn-ghost:hover {
+    background-color: #F7F5F2;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border transition-shadow;
+    border-color: #E5E5E5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent;
+    border-color: #E5E5E5;
+  }
+
+  .input-field:focus {
+    --tw-ring-color: #F1641E;
+  }
+}
