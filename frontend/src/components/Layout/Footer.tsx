@@ -1,8 +1,16 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Mail, Phone, MapPin } from 'lucide-react'
+import { useAuthStore } from '@stores/auth'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const { user, clearAuth } = useAuthStore()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    clearAuth()
+    navigate('/')
+  }
 
   return (
     <footer className="bg-accent text-white">
@@ -35,61 +43,85 @@ export default function Footer() {
                   Search
                 </Link>
               </li>
-              <li>
-                <Link to="/wishlist" className="hover:text-white transition">
-                  Saved Items
-                </Link>
-              </li>
             </ul>
           </div>
 
           {/* Account */}
           <div>
-            <h4 className="font-semibold mb-4">Account</h4>
+            <h4 className="font-semibold mb-4">
+              {user ? 'My Account' : 'Account'}
+            </h4>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li>
-                <Link to="/auth/login" className="hover:text-white transition">
-                  Sign In
-                </Link>
-              </li>
-              <li>
-                <Link to="/auth/register" className="hover:text-white transition">
-                  Register
-                </Link>
-              </li>
-              <li>
-                <Link to="/orders" className="hover:text-white transition">
-                  Orders
-                </Link>
-              </li>
-              <li>
-                <Link to="/account" className="hover:text-white transition">
-                  My Account
-                </Link>
-              </li>
+              {user ? (
+                <>
+                  <li>
+                    <Link to="/account" className="hover:text-white transition">
+                      My Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/orders" className="hover:text-white transition">
+                      Orders
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/wishlist" className="hover:text-white transition">
+                      Wishlist
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/cart" className="hover:text-white transition">
+                      Cart
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link to="/auth/login" className="hover:text-white transition">
+                      Sign In
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/auth/register" className="hover:text-white transition">
+                      Register
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold mb-4">Contact</h4>
+            <h4 className="font-semibold mb-4">Support</h4>
             <ul className="space-y-3 text-sm text-gray-300">
               <li className="flex items-start gap-2">
                 <Mail size={16} className="mt-0.5 flex-shrink-0" />
-                <a href="mailto:support@gechexpress.com" className="hover:text-white transition">
-                  support@gechexpress.com
+                <a href="mailto:support@getchexpress.com" className="hover:text-white transition">
+                  support@getchexpress.com
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <Phone size={16} className="mt-0.5 flex-shrink-0" />
-                <a href="tel:+1234567890" className="hover:text-white transition">
-                  +1 (234) 567-890
+                <a href="tel:+251911234567" className="hover:text-white transition">
+                  +251 911 234 567
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin size={16} className="mt-0.5 flex-shrink-0" />
-                <span>123 Commerce St, City, Country</span>
+                <span>Addis Ababa, Ethiopia</span>
               </li>
+              {user && (
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-transparent p-0 text-gray-300 hover:text-white transition"
+                  >
+                    Logout
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
         </div>

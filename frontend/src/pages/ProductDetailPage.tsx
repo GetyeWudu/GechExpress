@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Heart, ShoppingCart, Star, Truck, RotateCcw } from 'lucide-react'
-import { useProduct, useReviews, useAddToCart, useAddToWishlist, useRemoveFromWishlist } from '@api/queries'
-import { useWishlistStore } from '@stores/wishlist'
+import { useProduct, useReviews, useAddToCart, useAddToWishlist, useRemoveFromWishlist, useWishlistItem } from '@api/queries'
 import { useAuthProtectedAction } from '@hooks/useAuthProtectedAction'
 import { useToast } from '@hooks/useToast'
 import { motion } from 'framer-motion'
@@ -41,9 +40,8 @@ export default function ProductDetailPage() {
   const addToWishlist = useAddToWishlist()
   const removeFromWishlist = useRemoveFromWishlist()
   const { execute: executeProtectedAction } = useAuthProtectedAction()
-  const isInWishlist = useWishlistStore((state) =>
-    state.isInWishlist(product?.id || 0)
-  )
+  const productId = product?.id
+  const { isInWishlist, wishlistItem } = useWishlistItem(productId)
   const toast = useToast()
 
   useEffect(() => {
@@ -96,21 +94,15 @@ export default function ProductDetailPage() {
 
   const handleToggleWishlist = async () => {
     if (!product) return
+    if (isInWishlist && !wishlistItem) return
 
     await executeProtectedAction(async () => {
       setIsLoadingWishlist(true)
       try {
-        if (isInWishlist) {
-          const wishlistItem = useWishlistStore
-            .getState()
-            .wishlist?.items.find((item) => item.product === product.id)
-          if (wishlistItem) {
-            await removeFromWishlist.mutateAsync(wishlistItem.id)
-            toast.success('Removed from wishlist')
-          }
+        if (isInWishlist && wishlistItem) {
+          await removeFromWishlist.mutateAsync(wishlistItem.id)
         } else {
           await addToWishlist.mutateAsync(product.id)
-          toast.success(`${product.name} added to wishlist!`)
         }
       } finally {
         setIsLoadingWishlist(false)

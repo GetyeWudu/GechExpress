@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Heart, ShoppingCart, Star, AlertCircle } from 'lucide-react'
 import { Product } from '@types/index'
-import { useAddToCart } from '@api/queries'
-import { useWishlistStore } from '@stores/wishlist'
-import { useAddToWishlist, useRemoveFromWishlist } from '@api/queries'
+import { useAddToCart, useAddToWishlist, useRemoveFromWishlist, useWishlistItem } from '@api/queries'
 import { useState } from 'react'
 import { useAuthProtectedAction } from '@hooks/useAuthProtectedAction'
 import { useToast } from '@hooks/useToast'
@@ -30,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const addToCart = useAddToCart()
   const addToWishlist = useAddToWishlist()
   const removeFromWishlist = useRemoveFromWishlist()
-  const isInWishlist = useWishlistStore((state) => state.isInWishlist(productId))
+  const { isInWishlist, wishlistItem } = useWishlistItem(productId)
   const [isLoadingCart, setIsLoadingCart] = useState(false)
   const [isLoadingWishlist, setIsLoadingWishlist] = useState(false)
   const [cartError, setCartError] = useState<string | null>(null)
@@ -95,20 +93,15 @@ export default function ProductCard({ product }: ProductCardProps) {
     e.stopPropagation()
     if (!productId) return
 
+    if (isInWishlist && !wishlistItem) return
+
     await executeProtectedAction(async () => {
       setIsLoadingWishlist(true)
       try {
-        if (isInWishlist) {
-          const wishlistItem = useWishlistStore
-            .getState()
-            .wishlist?.items.find((item) => item.product === productId)
-          if (wishlistItem) {
-            await removeFromWishlist.mutateAsync(wishlistItem.id)
-            toast.success(`Removed from wishlist`)
-          }
+        if (isInWishlist && wishlistItem) {
+          await removeFromWishlist.mutateAsync(wishlistItem.id)
         } else {
           await addToWishlist.mutateAsync(productId)
-          toast.success(`${product.name} added to wishlist!`)
         }
       } finally {
         setIsLoadingWishlist(false)

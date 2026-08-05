@@ -1,5 +1,7 @@
+import { useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from './client'
+import { useAuthStore } from '@stores/auth'
 import type {
   Product,
   Category,
@@ -9,6 +11,7 @@ import type {
   Order,
   Review,
   Wishlist,
+  WishlistItem,
   ShippingMethod,
   PaginatedResponse,
 } from '@types/index'
@@ -380,40 +383,88 @@ export function useReviews(productId?: number) {
 
 // Wishlist queries and mutations
 export function useWishlist() {
+  const user = useAuthStore((state) => state.user)
+
   return useQuery({
     queryKey: queryKeys.wishlist.detail(),
     queryFn: async () => {
       const response = await apiClient.get<Wishlist>('/wishlist/')
       return response.data
     },
+    enabled: !!user,
   })
+}
+
+export function useWishlistItem(productId: number | undefined) {
+  const { data: wishlist } = useWishlist()
+
+  return useMemo(() => {
+    const item = wishlist?.items.find((i) => i.product === productId)
+    return { isInWishlist: !!item, wishlistItem: item }
+  }, [wishlist, productId])
 }
 
 export function useAddToWishlist() {
   const queryClient = useQueryClient()
+  const queryKey = queryKeys.wishlist.detail()
 
   return useMutation({
     mutationFn: async (productId: number) => {
-      const response = await apiClient.post('/wishlist/add/', {
+      const response = await apiClient.post<WishlistItem>('/wishlist/add/', {
         product_id: productId,
       })
       return response.data
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.detail() })
+    onMutate: async (_productId) => {
+      await queryClient.cancelQueries({ queryKey })
+      const previousWishlist = queryClient.getQueryData<Wishlist>(queryKey)
+      return { previousWishlist }
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData<Wishlist>(queryKey, (old) => {
+        if (!old) {
+          return { id: 0, items: [data], created_at: '', updated_at: '' }
+        }
+        const exists = old.items.find((item) => item.id === data.id)
+        if (exists) return old
+        return { ...old, items: [...old.items, data] }
+      })
+    },
+    onError: (error, _productId, context) => {
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(queryKey, context.previousWishlist)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey })
     },
   })
 }
 
 export function useRemoveFromWishlist() {
   const queryClient = useQueryClient()
+  const queryKey = queryKeys.wishlist.detail()
 
   return useMutation({
     mutationFn: async (id: number) => {
       await apiClient.delete(`/wishlist/${id}/remove/`)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.detail() })
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey })
+      const previousWishlist = queryClient.getQueryData<Wishlist>(queryKey)
+      queryClient.setQueryData<Wishlist>(queryKey, (old) => {
+        if (!old) return old
+        return { ...old, items: old.items.filter((item) => item.id !== id) }
+      })
+      return { previousWishlist }
+    },
+    onError: (error, _id, context) => {
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(queryKey, context.previousWishlist)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey })
     },
   })
 }
