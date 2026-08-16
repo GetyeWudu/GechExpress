@@ -181,5 +181,23 @@ class PasswordResetRequestSerializer(
 
         return value
 
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "role",
+            "account_status",
+        ]
 
+        read_only_fields = [
+            "id",
+            "email",
+            "role",
+            "account_status",
+        ]
 

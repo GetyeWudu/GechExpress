@@ -1,4 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.db import transaction
+from django.conf import settings
+User = settings.AUTH_USER_MODEL
 
 
 class UserManager(BaseUserManager):
@@ -76,3 +79,40 @@ class UserManager(BaseUserManager):
             password,
             **extra_fields,
         )
+
+
+
+
+
+class UserManagementService:
+
+    @staticmethod
+    @transaction.atomic
+    def create_seller(
+        *,
+        email,
+        password,
+        first_name="",
+        last_name="",
+        phone_number=None,
+    ):
+        if User.objects.filter(
+            email=email
+        ).exists():
+            raise ValueError(
+                "A user with this email already exists."
+            )
+
+        seller = User.objects.create_user(
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
+            role=User.Role.SELLER,
+            account_status=(
+                User.AccountStatus.ACTIVE
+            ),
+        )
+
+        return seller

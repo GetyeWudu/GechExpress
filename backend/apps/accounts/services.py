@@ -47,52 +47,30 @@ class UserManagementService:
 
     @staticmethod
     @transaction.atomic
-    def change_role(
+    def create_seller(
         *,
-        admin_user,
-        target_user,
-        new_role,
+        email,
+        password,
+        first_name="",
+        last_name="",
+        phone_number=None,
     ):
-
-        if admin_user == target_user:
+        if User.objects.filter(email=email).exists():
             raise ValueError(
-                "You cannot change your own role."
+                "A user with this email already exists."
             )
 
-        if (
-            target_user.role == User.Role.ADMIN
-            and new_role != User.Role.ADMIN
-        ):
-
-            active_admins = (
-                User.objects
-                .select_for_update()
-                .filter(
-                    role=User.Role.ADMIN,
-                    account_status=(
-                        User.AccountStatus.ACTIVE
-                    ),
-                    is_active=True,
-                )
-                .count()
-            )
-
-            if active_admins <= 1:
-                raise ValueError(
-                    "The last active administrator "
-                    "cannot be demoted."
-                )
-
-        target_user.role = new_role
-
-        target_user.save(
-            update_fields=[
-                "role",
-                "updated_at",
-            ]
+        seller = User.objects.create_user(
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
+            role=User.Role.SELLER,
+            account_status=User.AccountStatus.ACTIVE,
         )
 
-        return target_user
+        return seller
 
     @staticmethod
     @transaction.atomic
@@ -102,42 +80,35 @@ class UserManagementService:
         target_user,
         new_status,
     ):
-
         if admin_user == target_user:
             raise ValueError(
-                "You cannot change your own status."
+                "You cannot change your own account status."
             )
 
         if (
             target_user.role == User.Role.ADMIN
-            and new_status
-            != User.AccountStatus.ACTIVE
+            and new_status != User.AccountStatus.ACTIVE
         ):
-
-            active_admins = (
+            active_admin_count = (
                 User.objects
                 .select_for_update()
                 .filter(
                     role=User.Role.ADMIN,
-                    account_status=(
-                        User.AccountStatus.ACTIVE
-                    ),
+                    account_status=User.AccountStatus.ACTIVE,
                     is_active=True,
                 )
                 .count()
             )
 
-            if active_admins <= 1:
+            if active_admin_count <= 1:
                 raise ValueError(
                     "The last active administrator "
-                    "cannot be deactivated or suspended."
+                    "cannot be suspended or deactivated."
                 )
 
         target_user.account_status = new_status
-
         target_user.is_active = (
-            new_status
-            == User.AccountStatus.ACTIVE
+            new_status == User.AccountStatus.ACTIVE
         )
 
         target_user.save(
@@ -149,8 +120,6 @@ class UserManagementService:
         )
 
         return target_user
-
-
 class GoogleAuthenticationError(Exception):
     """Base Google authentication error."""
 
