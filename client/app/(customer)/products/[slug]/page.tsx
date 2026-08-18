@@ -1,9 +1,10 @@
 import { ProductGallery } from "@/components/customer/product-gallery";
 import { ProductInfo } from "@/components/customer/product-info";
 import { ProductCard } from "@/components/customer/product-card";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight, Home, Star, CheckCircle2, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock Data
 const PRODUCT_DB = {
@@ -154,6 +155,133 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         <ProductGallery images={product.images} productName={product.name} />
         <ProductInfo product={product} />
       </div>
+
+      {/* Full-width Product Details Tabs */}
+      <section className="mb-24">
+        <Tabs defaultValue="description" className="w-full">
+          <TabsList className="w-full justify-start border-b border-slate-200 dark:border-slate-800 rounded-none bg-transparent p-0 h-auto">
+            <TabsTrigger 
+              value="description" 
+              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none text-base font-semibold px-8 py-4 text-slate-500 data-[state=active]:text-primary"
+            >
+              Description
+            </TabsTrigger>
+            <TabsTrigger 
+              value="reviews" 
+              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none text-base font-semibold px-8 py-4 text-slate-500 data-[state=active]:text-primary flex items-center gap-2"
+            >
+              Customer Reviews <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs px-2 py-0.5 rounded-full">{product.reviewsCount}</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="description" className="pt-8 animate-in fade-in-50 duration-500">
+            <div className="max-w-3xl prose prose-slate dark:prose-invert">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">About this product</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
+                {product.description}
+              </p>
+              <ul className="mt-8 space-y-3 text-slate-600 dark:text-slate-400">
+                <li className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" /> Premium build quality using aerospace-grade materials.</li>
+                <li className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" /> Designed in California with precision engineering.</li>
+                <li className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" /> Covered by our 12-month international warranty.</li>
+              </ul>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="reviews" className="pt-8 animate-in fade-in-50 duration-500">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+              
+              {/* Review Summary Column */}
+              <div className="md:col-span-4 lg:col-span-3 space-y-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Customer Reviews</h3>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} className={`h-6 w-6 ${star <= Math.round(product.rating) ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700"}`} />
+                      ))}
+                    </div>
+                    <span className="text-xl font-bold text-slate-900 dark:text-white">{product.rating.toFixed(1)} out of 5</span>
+                  </div>
+                  <p className="text-sm text-slate-500">Based on {product.reviewsCount} global ratings</p>
+                </div>
+                
+                <div className="space-y-3">
+                  {[
+                    { stars: 5, percentage: 75 },
+                    { stars: 4, percentage: 15 },
+                    { stars: 3, percentage: 5 },
+                    { stars: 2, percentage: 3 },
+                    { stars: 1, percentage: 2 }
+                  ].map((bar) => (
+                    <div key={bar.stars} className="flex items-center gap-3 text-sm">
+                      <span className="w-12 text-slate-600 dark:text-slate-400 font-medium hover:text-primary cursor-pointer">{bar.stars} star</span>
+                      <div className="flex-1 h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                        <div className="h-full bg-amber-400 rounded-full" style={{ width: `${bar.percentage}%` }}></div>
+                      </div>
+                      <span className="w-10 text-right text-slate-500">{bar.percentage}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Review List Column */}
+              <div className="md:col-span-8 lg:col-span-9 space-y-8">
+                {/* Mock Review 1 */}
+                <div className="border-b border-slate-200 dark:border-slate-800 pb-8 last:border-0">
+                  <div className="flex items-center gap-3 mb-3">
+                    <UserCircle2 className="h-10 w-10 text-slate-300" />
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white">Alex Johnson</p>
+                      <p className="text-xs text-slate-500">Reviewed in Ethiopia on October 12, 2023</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                    <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Verified Purchase
+                    </span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-2">Absolutely incredible quality and design!</h4>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    I was hesitant at first, but this product exceeded all my expectations. The build quality feels extremely premium, and it performs exactly as advertised. Delivery via GechExpress was fast and secure. Highly recommend to anyone on the fence!
+                  </p>
+                </div>
+
+                {/* Mock Review 2 */}
+                <div className="border-b border-slate-200 dark:border-slate-800 pb-8 last:border-0">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">SM</div>
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white">Sarah M.</p>
+                      <p className="text-xs text-slate-500">Reviewed in Ethiopia on September 28, 2023</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex">
+                      {[1, 2, 3, 4].map((star) => (
+                        <Star key={star} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                      ))}
+                      <Star className="h-4 w-4 fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700" />
+                    </div>
+                    <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Verified Purchase
+                    </span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-2">Great product, slightly delayed shipping</h4>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    The item itself is fantastic. Works perfectly and looks great on my desk. I knocked off one star because the courier got slightly lost trying to find my specific location, but the customer service was very helpful in resolving it.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
 
       {/* Related Products */}
       <section className="pt-16 border-t border-slate-200 dark:border-slate-800">

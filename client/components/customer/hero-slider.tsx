@@ -32,7 +32,7 @@ const HERO_SLIDES = [
     heading2: "Living Space",
     description: "Beautiful home essentials, décor, and furniture to create the perfect sanctuary you deserve.",
     cta: { label: "Shop Home Goods", href: "/products?category=home-living" },
-    image: "https://images.unsplash.com/photo-1484101403630-f273448c5667?q=80&w=1600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1600&auto=format&fit=crop",
   },
 ];
 

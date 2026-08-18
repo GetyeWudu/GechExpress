@@ -1,33 +1,23 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/customer/product-card";
-import { Heart, Search } from "lucide-react";
+import { Heart, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants, Button } from "@/components/ui/button";
-
-const MOCK_WISHLIST_ITEMS = [
-  {
-    id: "p3",
-    name: "Smart Fitness Watch Series 7",
-    slug: "smart-fitness-watch-7",
-    price: 199.99,
-    originalPrice: 249.99,
-    rating: 4.6,
-    reviewsCount: 256,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600&auto=format&fit=crop",
-    discountPercentage: 20,
-  },
-  {
-    id: "p6",
-    name: "Professional Camera Lens",
-    slug: "professional-camera-lens",
-    price: 899.99,
-    rating: 4.9,
-    reviewsCount: 56,
-    image: "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?q=80&w=600&auto=format&fit=crop",
-  }
-];
+import { useWishlistStore } from "@/stores/wishlist-store";
 
 export default function WishlistPage() {
-  const hasItems = MOCK_WISHLIST_ITEMS.length > 0;
+  const [mounted, setMounted] = useState(false);
+  const { items, toggleItem } = useWishlistStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null; // Prevent hydration mismatch
+
+  const hasItems = items.length > 0;
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 min-h-[70vh]">
@@ -61,18 +51,22 @@ export default function WishlistPage() {
         <div>
           <div className="mb-6 flex justify-between items-center">
             <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
-              {MOCK_WISHLIST_ITEMS.length} items saved
+              {items.length} items saved
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {MOCK_WISHLIST_ITEMS.map((item) => (
+            {items
+              .filter(item => typeof item === 'object' && item !== null && item.id) // Filter legacy strings
+              .map((item) => (
               <div key={item.id} className="relative group">
                 <ProductCard {...item} />
                 <Button 
+                  onClick={() => toggleItem(item)}
                   variant="secondary" 
                   size="sm" 
-                  className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-900 hover:bg-rose-50 hover:text-rose-600 dark:bg-slate-900/90 dark:text-white dark:hover:bg-rose-950 dark:hover:text-rose-400 border border-slate-200 dark:border-slate-800"
+                  className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-900 hover:bg-rose-50 hover:text-rose-600 dark:bg-slate-900/90 dark:text-white dark:hover:bg-rose-950 dark:hover:text-rose-400 border border-slate-200 dark:border-slate-800 shadow-md"
                 >
+                  <Trash2 className="w-3.5 h-3.5 mr-1" />
                   Remove
                 </Button>
               </div>

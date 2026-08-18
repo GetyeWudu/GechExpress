@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/pagination";
 import { SlidersHorizontal } from "lucide-react";
 
-// Mock data
 const PRODUCTS = [
   {
     id: "p1",
@@ -27,6 +26,7 @@ const PRODUCTS = [
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop",
     isNew: true,
     discountPercentage: 14,
+    category: "electronics",
   },
   {
     id: "p2",
@@ -36,6 +36,7 @@ const PRODUCTS = [
     rating: 4.9,
     reviewsCount: 89,
     image: "https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=600&auto=format&fit=crop",
+    category: "electronics",
   },
   {
     id: "p3",
@@ -47,6 +48,7 @@ const PRODUCTS = [
     reviewsCount: 256,
     image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600&auto=format&fit=crop",
     discountPercentage: 20,
+    category: "electronics",
   },
   {
     id: "p4",
@@ -56,6 +58,7 @@ const PRODUCTS = [
     rating: 4.7,
     reviewsCount: 42,
     image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=600&auto=format&fit=crop",
+    category: "fashion",
   },
   {
     id: "p5",
@@ -65,6 +68,7 @@ const PRODUCTS = [
     rating: 4.5,
     reviewsCount: 312,
     image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=600&auto=format&fit=crop",
+    category: "electronics",
   },
   {
     id: "p6",
@@ -74,18 +78,29 @@ const PRODUCTS = [
     rating: 4.9,
     reviewsCount: 56,
     image: "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?q=80&w=600&auto=format&fit=crop",
+    category: "electronics",
   }
 ];
 
-export default function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const { category } = await searchParams;
+  
+  // Filter products by category if provided
+  const filteredProducts = category 
+    ? PRODUCTS.filter(p => p.category === category)
+    : PRODUCTS;
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Page Header */}
       <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-8 dark:border-slate-800">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
+        <h1 className="text-3xl font-black font-serif tracking-tight text-slate-900 dark:text-white md:text-4xl">
           All Products
         </h1>
-        <p className="text-slate-500 dark:text-slate-400">
+        <p className="text-slate-500 dark:text-slate-400 font-serif text-lg">
           Browse our entire collection of premium items.
         </p>
       </div>
@@ -116,7 +131,7 @@ export default function ProductsPage() {
               </Sheet>
 
               <span className="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">
-                Showing {PRODUCTS.length} products
+                Showing {filteredProducts.length} products
               </span>
             </div>
 
@@ -141,9 +156,15 @@ export default function ProductsPage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {PRODUCTS.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-slate-500">
+                No products found in this category.
+              </div>
+            )}
           </div>
 
           {/* Pagination */}

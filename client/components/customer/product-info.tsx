@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Minus, Plus, Heart, Share2, ShieldCheck, Truck } from "lucide-react";
+import { Star, Minus, Plus, Heart, Share2, ShieldCheck, Truck, ShoppingCart, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -31,87 +31,110 @@ export function ProductInfo({ product }: ProductInfoProps) {
   return (
     <div className="flex flex-col gap-6">
       {/* Header Info */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 mb-2">
-          {product.inStock ? (
-            <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800">
-              In Stock
-            </Badge>
-          ) : (
-            <Badge variant="destructive">Out of Stock</Badge>
-          )}
-          <span className="text-xs text-slate-500">SKU: {product.sku}</span>
+      <div className="space-y-4">
+        <div className="flex justify-between items-start gap-4">
+          <h1 className="text-3xl sm:text-4xl leading-tight font-black text-slate-900 dark:text-white tracking-tight">
+            {product.name}
+          </h1>
+          <Button variant="outline" size="icon" className="shrink-0 rounded-full h-10 w-10 text-slate-500 hover:text-primary border-slate-200 shadow-sm transition-colors">
+            <Share2 className="h-4 w-4" />
+          </Button>
         </div>
         
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          {product.name}
-        </h1>
-        
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              {product.rating.toFixed(1)}
-            </span>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star key={star} className={`h-4 w-4 ${star <= Math.round(product.rating) ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700"}`} />
+                ))}
+              </div>
+              <span className="text-sm font-bold text-slate-900 dark:text-slate-100 ml-1">
+                {product.rating.toFixed(1)}
+              </span>
+            </div>
+            <Separator orientation="vertical" className="h-4" />
+            <a href="#reviews" className="text-sm text-slate-500 hover:text-primary transition-colors hover:underline">
+              {product.reviewsCount} Reviews
+            </a>
           </div>
-          <Separator orientation="vertical" className="h-4" />
-          <a href="#reviews" className="text-sm text-primary hover:underline">
-            {product.reviewsCount} Reviews
-          </a>
+          
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">SKU:</span>
+            <Badge variant="secondary" className="bg-slate-100 text-slate-500 hover:bg-slate-100 rounded-md font-mono text-xs px-2 dark:bg-slate-800 dark:text-slate-400">
+              {product.sku}
+            </Badge>
+            {product.inStock ? (
+              <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-emerald-200 ml-2 shadow-none font-semibold">
+                In Stock
+              </Badge>
+            ) : (
+              <Badge variant="destructive" className="ml-2">Out of Stock</Badge>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Pricing */}
-      <div className="flex items-end gap-3">
-        <span className="text-3xl font-extrabold text-slate-900 dark:text-white">
-          ${product.price.toFixed(2)}
-        </span>
-        {product.originalPrice && (
-          <span className="text-lg text-slate-500 line-through mb-1">
-            ${product.originalPrice.toFixed(2)}
+      <div className="flex flex-col gap-1 mt-6">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[13px] font-bold text-slate-500 dark:text-slate-400 mb-1 tracking-wide">ETB</span>
+          <span className="text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            {product.price.toFixed(2)}
           </span>
-        )}
+        </div>
         {product.originalPrice && (
-          <Badge className="bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100 mb-2 dark:bg-rose-900/30 dark:text-rose-400 dark:border-rose-800">
-            Save ${ (product.originalPrice - product.price).toFixed(2) }
-          </Badge>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-400 line-through font-medium">
+              ETB {product.originalPrice.toFixed(2)}
+            </span>
+            <Badge className="bg-rose-50 text-rose-600 border-rose-200 shadow-none font-bold">
+              Save ETB {(product.originalPrice - product.price).toFixed(2)}
+            </Badge>
+          </div>
         )}
       </div>
 
-      <Separator />
 
-      {/* Description */}
-      <div className="prose prose-sm dark:prose-invert text-slate-600 dark:text-slate-400">
-        <p>{product.description}</p>
-      </div>
-
-      <Separator />
 
       {/* Actions */}
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <div className="flex h-12 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-2 sm:w-32 shrink-0">
-          <Button variant="ghost" size="icon" onClick={decrement} className="h-8 w-8" disabled={!product.inStock}>
-            <Minus className="h-4 w-4" />
-          </Button>
-          <span className="text-base font-medium">{quantity}</span>
-          <Button variant="ghost" size="icon" onClick={increment} className="h-8 w-8" disabled={!product.inStock}>
-            <Plus className="h-4 w-4" />
+      <div className="space-y-6 pt-6">
+        <div className="space-y-3">
+          <span className="text-[11px] font-extrabold text-slate-900 dark:text-slate-100 uppercase tracking-widest">Quantity</span>
+          <div className="flex h-11 items-center justify-between rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-2 w-36 shadow-sm">
+            <Button variant="ghost" size="icon" onClick={decrement} className="h-8 w-8 rounded-full text-slate-400 hover:text-primary hover:bg-primary/10" disabled={!product.inStock}>
+              <Minus className="h-4 w-4" />
+            </Button>
+            <span className="text-sm font-bold w-8 text-center">{quantity}</span>
+            <Button variant="ghost" size="icon" onClick={increment} className="h-8 w-8 rounded-full text-slate-400 hover:text-primary hover:bg-primary/10" disabled={!product.inStock}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-3 w-full">
+            <Button size="lg" className="flex-1 h-11 text-[13px] font-bold bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900 text-white shadow-md transition-all rounded-full tracking-wide" disabled={!product.inStock}>
+              <ShoppingCart className="h-3.5 w-3.5 mr-2" />
+              Add to Cart
+            </Button>
+            
+            <Button size="lg" className="flex-1 h-11 text-[13px] font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all rounded-full tracking-wide" disabled={!product.inStock}>
+              <Zap className="h-3.5 w-3.5 mr-2 fill-current" />
+              Buy Now
+            </Button>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="w-full h-11 text-[13px] font-bold border-2 border-slate-200 dark:border-slate-800 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 transition-colors rounded-full tracking-wide"
+            onClick={() => setIsWishlisted(!isWishlisted)}
+          >
+            <Heart className={cn("h-4 w-4 mr-2 transition-all", isWishlisted ? "fill-rose-500 text-rose-500 scale-110" : "text-slate-400")} />
+            {isWishlisted ? "Saved to Wishlist" : "Save to Wishlist"}
           </Button>
         </div>
-        
-        <Button size="lg" className="h-12 flex-1 text-base font-semibold" disabled={!product.inStock}>
-          Add to Cart - ${(product.price * quantity).toFixed(2)}
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-12 w-12 shrink-0 border-slate-200 dark:border-slate-800"
-          onClick={() => setIsWishlisted(!isWishlisted)}
-        >
-          <Heart className={cn("h-5 w-5 transition-colors", isWishlisted ? "fill-rose-500 text-rose-500" : "")} />
-          <span className="sr-only">Wishlist</span>
-        </Button>
       </div>
 
       {/* Additional Guarantees */}

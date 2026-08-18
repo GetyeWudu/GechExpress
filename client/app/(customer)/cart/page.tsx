@@ -1,34 +1,26 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { CartItem } from "@/components/customer/cart-item";
 import { CartSummary } from "@/components/customer/cart-summary";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Home, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-
-const MOCK_CART_ITEMS = [
-  {
-    id: "item_1",
-    name: "Premium Wireless Headphones with Active Noise Cancellation",
-    slug: "premium-wireless-headphones",
-    price: 299.99,
-    originalPrice: 349.99,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop",
-    quantity: 1,
-    variant: "Black"
-  },
-  {
-    id: "item_2",
-    name: "Leather Messenger Bag",
-    slug: "leather-messenger-bag",
-    price: 89.99,
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=600&auto=format&fit=crop",
-    quantity: 2,
-  }
-];
+import { useCartStore } from "@/stores/cart-store";
 
 export default function CartPage() {
-  const hasItems = MOCK_CART_ITEMS.length > 0;
-  const subtotal = MOCK_CART_ITEMS.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const discount = 20.00; // Mock discount
+  const [mounted, setMounted] = useState(false);
+  const { items, getTotalPrice, updateQuantity, removeItem } = useCartStore();
+  const subtotal = getTotalPrice();
+  const discount = 0; // Dynamic discount can be added later
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null; // Prevent hydration mismatch
+
+  const hasItems = items.length > 0;
 
   if (!hasItems) {
     return (
@@ -48,28 +40,80 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
-        Shopping Cart ({MOCK_CART_ITEMS.length})
-      </h1>
-
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-        <div className="flex-1">
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 sm:px-6">
-            {MOCK_CART_ITEMS.map((item) => (
-              <CartItem key={item.id} {...item} />
-            ))}
+    <div className="min-h-screen bg-white dark:bg-slate-950 pb-20">
+      <div className="container mx-auto px-4 pt-4 md:pt-8 max-w-[1200px]">
+        
+        {/* Top Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-1" style={{ fontFamily: "serif" }}>
+              Shopping Cart
+            </h1>
+            <p className="text-slate-500 text-sm">{items.length} items</p>
+          </div>
+          <div className="flex items-center gap-2 bg-[#fdf8ed] dark:bg-[#332c1c] text-[#c69a53] px-4 py-1.5 rounded-full text-xs font-semibold border border-[#faecd8] dark:border-[#52442a]">
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4"/><path d="m4.93 10.93 2.83-2.83"/><path d="M2 18h4"/><path d="m4.93 25.07 2.83 2.83"/><path d="M12 30v-4"/><path d="m19.07 25.07-2.83 2.83"/><path d="M22 18h-4"/><path d="m19.07 10.93-2.83-2.83"/></svg>
+             Free Shipping Unlocked
           </div>
         </div>
-        
-        <div className="w-full lg:w-96 shrink-0">
-          <div className="sticky top-24">
-            <CartSummary 
-              subtotal={subtotal} 
-              shipping={0} // Free shipping
-              tax={subtotal * 0.08} // 8% tax
-              discount={discount}
-            />
+
+        {/* Production-Level Breadcrumb */}
+        <nav aria-label="Breadcrumb" className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4 mb-8">
+          <ol className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <li>
+              <Link href="/" className="hover:text-primary transition-colors flex items-center gap-1.5">
+                <Home className="w-4 h-4" />
+                <span className="hidden sm:inline">Home</span>
+              </Link>
+            </li>
+            <li>
+              <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+            </li>
+            <li>
+              <Link href="/products" className="hover:text-primary transition-colors">
+                Shop
+              </Link>
+            </li>
+            <li>
+              <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+            </li>
+            <li aria-current="page" className="text-slate-900 dark:text-slate-100 font-medium">
+              Shopping Cart
+            </li>
+          </ol>
+          <div className="bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 px-3 py-1 rounded text-xs font-semibold border border-slate-100 dark:border-slate-800 hidden sm:block">
+            {items.length} items in cart
+          </div>
+        </nav>
+
+
+
+        {/* Main Content */}
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          <div className="flex-1 lg:max-w-[700px]">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6" style={{ fontFamily: "serif" }}>Shopping Cart</h2>
+            <div className="flex flex-col gap-6">
+              {items.map((item) => (
+                <CartItem 
+                  key={item.id} 
+                  {...item} 
+                  onUpdateQuantity={(qty) => updateQuantity(item.id, qty)}
+                  onRemove={() => removeItem(item.id)}
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="w-full lg:w-[420px] shrink-0">
+            <div className="sticky top-24">
+              <CartSummary 
+                items={items}
+                subtotal={subtotal} 
+                shipping={0} // Free shipping
+                tax={subtotal * 0.15} // 15% tax (matching image)
+                discount={0}
+              />
+            </div>
           </div>
         </div>
       </div>

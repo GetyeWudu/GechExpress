@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Trash2, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Minus, Plus, Trash2 } from "lucide-react";
 
 export interface CartItemProps {
   id: string;
@@ -14,61 +13,131 @@ export interface CartItemProps {
   image: string;
   quantity: number;
   variant?: string;
+  onUpdateQuantity?: (quantity: number) => void;
+  onRemove?: () => void;
 }
 
-export function CartItem({ id, name, slug, price, originalPrice, image, quantity, variant }: CartItemProps) {
+export function CartItem({ id, name, slug, price, originalPrice, image, quantity, variant, onUpdateQuantity, onRemove }: CartItemProps) {
+  const mockColors = ["Black", "White", "Silver", "Gold", "Navy", "Red"];
+  const mockSizes = ["Small", "Medium", "Large", "XL", "One Size"];
+  
+  // Mock category
+  const category = "home-kitchen";
+  
+  // Mock stock logic based on id length to generate a stable pseudo-random stock number
+  const stock = id.length * 20 + (price % 5 > 2 ? 0 : 50);
+  const inStock = stock > 0;
+  
   return (
-    <div className="flex flex-col sm:flex-row gap-4 py-6 border-b border-slate-200 dark:border-slate-800 last:border-0">
-      <Link href={`/products/${slug}`} className="relative h-24 w-24 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-md bg-slate-100 dark:bg-slate-900">
+    <div className="flex flex-col sm:flex-row gap-6 p-5 md:p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm">
+      
+      {/* Product Image */}
+      <Link href={`/products/${slug}`} className="relative h-[120px] w-[120px] shrink-0 overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
         <Image
           src={image || "/placeholder.svg"}
           alt={name}
           fill
           className="object-cover"
-          sizes="(max-width: 640px) 96px, 128px"
+          sizes="120px"
         />
       </Link>
       
-      <div className="flex flex-1 flex-col justify-between">
-        <div className="flex justify-between gap-4">
-          <div className="space-y-1">
-            <Link href={`/products/${slug}`}>
-              <h3 className="font-medium text-slate-900 dark:text-white hover:text-primary transition-colors line-clamp-2">
-                {name}
-              </h3>
-            </Link>
-            {variant && (
-              <p className="text-sm text-slate-500 dark:text-slate-400">Variant: {variant}</p>
-            )}
-          </div>
-          <div className="text-right shrink-0">
-            <p className="font-semibold text-slate-900 dark:text-white">${price.toFixed(2)}</p>
-            {originalPrice && (
-              <p className="text-sm text-slate-500 line-through">${originalPrice.toFixed(2)}</p>
-            )}
-          </div>
+      {/* Product Info & Controls */}
+      <div className="flex flex-col flex-1">
+        {/* Top row: Title and Delete */}
+        <div className="flex justify-between items-start gap-4 mb-1">
+          <Link href={`/products/${slug}`}>
+            <h3 className="font-bold text-slate-900 dark:text-white hover:text-primary transition-colors text-[15px] line-clamp-2 font-serif">
+              {name}
+            </h3>
+          </Link>
+          <button 
+            onClick={() => onRemove && onRemove()}
+            className="text-red-500 hover:text-red-700 p-1 rounded-md transition-colors shrink-0"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Remove</span>
+          </button>
         </div>
         
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex h-9 items-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
-            <button className="flex h-full w-9 items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white disabled:opacity-50 transition-colors">
-              <Minus className="h-3 w-3" />
-            </button>
-            <span className="w-8 text-center text-sm font-medium">{quantity}</span>
-            <button className="flex h-full w-9 items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <Plus className="h-3 w-3" />
-            </button>
+        {/* Category */}
+        <p className="text-[12px] text-slate-400 dark:text-slate-500 mb-2 font-medium">{category}</p>
+        
+        {/* Stock Badge */}
+        <div className="mb-4">
+          <span className={`inline-block px-2 py-0.5 text-[11px] font-semibold rounded-sm ${inStock ? 'bg-[#b88c4d] text-white' : 'bg-red-500 text-white'}`}>
+            {inStock ? `${stock} In Stock` : "Out of stock"}
+          </span>
+        </div>
+        
+        {/* Selected Variant text (from image) */}
+        <p className="text-[13px] text-slate-600 dark:text-slate-400 mb-3 font-medium">Selected: Any color</p>
+
+        {/* Dropdowns */}
+        <div className="flex flex-col gap-3 mb-6 max-w-[200px]">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor={`color-${id}`} className="text-slate-500 dark:text-slate-400 text-[13px] font-medium">Color:</label>
+            <div className="relative">
+              <select 
+                id={`color-${id}`}
+                defaultValue={variant || mockColors[0]}
+                className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-full px-3 py-1.5 text-slate-700 dark:text-slate-300 outline-none focus:ring-1 focus:ring-primary text-[13px] w-full cursor-pointer appearance-none shadow-sm"
+              >
+                <option value="">Select color</option>
+                {mockColors.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-slate-500 hover:text-primary">
-              <Heart className="mr-1.5 h-4 w-4" />
-              <span className="hidden sm:inline">Save</span>
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-slate-500 hover:text-rose-600">
-              <Trash2 className="mr-1.5 h-4 w-4" />
-              <span className="hidden sm:inline">Remove</span>
-            </Button>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor={`size-${id}`} className="text-slate-500 dark:text-slate-400 text-[13px] font-medium">Size:</label>
+            <div className="relative">
+              <select 
+                id={`size-${id}`}
+                defaultValue=""
+                className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-full px-3 py-1.5 text-slate-700 dark:text-slate-300 outline-none focus:ring-1 focus:ring-primary text-[13px] w-full cursor-pointer appearance-none shadow-sm"
+              >
+                <option value="">Select size</option>
+                {mockSizes.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Row: Price and Quantity */}
+        <div className="flex justify-between items-end mt-auto">
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-bold text-slate-900 dark:text-white text-[13px]">ETB {price.toFixed(0)}</span>
+            <span className="text-slate-400 text-[11px] font-medium">x {quantity}</span>
+            <span className="font-bold text-blue-700 dark:text-blue-500 text-[13px] ml-1">ETB {(price * quantity).toFixed(0)}</span>
+          </div>
+          
+          <div className="flex items-center rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-950 shadow-sm h-8">
+            <button 
+              disabled={!inStock}
+              onClick={() => onUpdateQuantity && onUpdateQuantity(quantity - 1)}
+              className="flex h-full w-8 items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 disabled:opacity-40 transition-colors"
+            >
+              <Minus className="h-3.5 w-3.5" />
+            </button>
+            <span className="w-8 text-center text-[13px] font-medium border-x border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white h-full flex items-center justify-center">{quantity}</span>
+            <button 
+              disabled={!inStock}
+              onClick={() => onUpdateQuantity && onUpdateQuantity(quantity + 1)}
+              className="flex h-full w-8 items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 disabled:opacity-40 transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       </div>

@@ -8,10 +8,54 @@ import { HeroSlider } from "@/components/customer/hero-slider";
 
 // Mock data for initial UI build
 const CATEGORIES = [
-  { id: "1", name: "Electronics", slug: "electronics", image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=600&auto=format&fit=crop", itemCount: 124 },
-  { id: "2", name: "Fashion", slug: "fashion", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=600&auto=format&fit=crop", itemCount: 86 },
-  { id: "3", name: "Home & Living", slug: "home-living", image: "https://images.unsplash.com/photo-1484101403630-f273448c5667?q=80&w=600&auto=format&fit=crop", itemCount: 42 },
-  { id: "4", name: "Beauty", slug: "beauty", image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop", itemCount: 53 },
+  { 
+    id: "1", 
+    name: "Electronics", 
+    slug: "electronics", 
+    images: [
+      "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=300&auto=format&fit=crop"
+    ], 
+    itemCount: 124 
+  },
+  { 
+    id: "2", 
+    name: "Fashion", 
+    slug: "fashion", 
+    images: [
+      "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=300&auto=format&fit=crop"
+    ], 
+    itemCount: 86 
+  },
+  { 
+    id: "3", 
+    name: "Home & Living", 
+    slug: "home-living", 
+    images: [
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=300&auto=format&fit=crop"
+    ], 
+    itemCount: 42 
+  },
+  { 
+    id: "4", 
+    name: "Beauty", 
+    slug: "beauty", 
+    images: [
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=300&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=300&auto=format&fit=crop"
+    ], 
+    itemCount: 53 
+  },
 ];
 
 const FEATURED_PRODUCTS = [
@@ -64,23 +108,28 @@ export default function CustomerHomePage() {
       {/* Hero: Full-screen immersive slider */}
       <HeroSlider />
 
-      {/* Featured Categories */}
-      <section className="container mx-auto px-4">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Shop by Category</h2>
-            <p className="mt-2 text-slate-500 dark:text-slate-400">Find exactly what you're looking for</p>
+      {/* Featured Categories (Enterprise Layout) */}
+      <section className="container mx-auto px-4 mt-8">
+        <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+              Shop by Category
+            </h2>
+            <p className="mt-3 text-lg text-slate-500 dark:text-slate-400">
+              Explore our curated collections of premium products, designed to elevate your everyday life.
+            </p>
           </div>
-          <Link href="/categories" className={buttonVariants({ variant: "ghost", className: "hidden sm:flex" })}>
-            View All <ArrowRight className="ml-2 h-4 w-4" />
+          <Link href="/categories" className={buttonVariants({ variant: "outline", className: "hidden sm:flex rounded-full px-6 border-slate-300" })}>
+            View All Categories <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
           {CATEGORIES.map((category) => (
             <CategoryCard key={category.id} {...category} />
           ))}
         </div>
-        <Link href="/categories" className={buttonVariants({ variant: "outline", className: "mt-6 w-full sm:hidden" })}>
+        <Link href="/categories" className={buttonVariants({ variant: "outline", className: "mt-8 w-full sm:hidden rounded-full h-12" })}>
           View All Categories
         </Link>
       </section>
@@ -96,7 +145,7 @@ export default function CustomerHomePage() {
             View All <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {FEATURED_PRODUCTS.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}

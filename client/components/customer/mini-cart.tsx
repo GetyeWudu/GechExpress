@@ -5,6 +5,7 @@ import { X, ShoppingBag } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { CartItem } from "./cart-item";
+import { useCartStore } from "@/stores/cart-store";
 
 const MOCK_CART_ITEMS = [
   {
@@ -18,6 +19,10 @@ const MOCK_CART_ITEMS = [
 ];
 
 export function MiniCart() {
+  const { items, getTotalItems, getTotalPrice, removeItem, updateQuantity } = useCartStore();
+  const totalItems = getTotalItems();
+  const totalPrice = getTotalPrice();
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -25,7 +30,7 @@ export function MiniCart() {
           <ShoppingBag className="h-4 w-4" />
           <span className="hidden sm:inline">Cart</span>
           <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
-            {MOCK_CART_ITEMS.length}
+            {totalItems}
           </span>
         </button>
       </SheetTrigger>
@@ -33,16 +38,20 @@ export function MiniCart() {
         <SheetHeader className="p-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
           <SheetTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
             <ShoppingBag className="h-5 w-5 text-indigo-500" />
-            Your Cart ({MOCK_CART_ITEMS.length})
+            Your Cart ({totalItems})
           </SheetTitle>
         </SheetHeader>
         
         <div className="flex-1 overflow-y-auto p-6">
-          {MOCK_CART_ITEMS.length > 0 ? (
+          {items.length > 0 ? (
             <div className="space-y-4">
-              {MOCK_CART_ITEMS.map((item) => (
+              {items.map((item) => (
                 <div key={item.id} className="scale-95 origin-top">
-                  <CartItem {...item} onUpdateQuantity={() => {}} onRemove={() => {}} />
+                  <CartItem 
+                    {...item} 
+                    onUpdateQuantity={(qty) => updateQuantity(item.id, qty)} 
+                    onRemove={() => removeItem(item.id)} 
+                  />
                 </div>
               ))}
             </div>
@@ -57,11 +66,11 @@ export function MiniCart() {
           )}
         </div>
         
-        {MOCK_CART_ITEMS.length > 0 && (
+        {items.length > 0 && (
           <div className="border-t border-slate-200 dark:border-slate-800 p-6 bg-white dark:bg-slate-900 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-10">
             <div className="flex justify-between items-center mb-4 text-slate-900 dark:text-white font-semibold">
               <span>Subtotal</span>
-              <span>$299.99</span>
+              <span>ETB {totalPrice.toFixed(2)}</span>
             </div>
             <p className="text-sm text-slate-500 mb-6">Shipping and taxes calculated at checkout.</p>
             <div className="grid grid-cols-2 gap-3">

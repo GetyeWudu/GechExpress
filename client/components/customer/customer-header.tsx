@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ShoppingBag, ShoppingCart, Heart, Search, Menu, User, LogOut } from "lucide-react";
+import { ShoppingBag, ShoppingCart, Heart, Search, Menu, User, LogOut, ChevronDown, ChevronRight, Sun, Moon, Monitor, Home, Grid, PlusCircle, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
@@ -17,11 +17,30 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useCartStore } from "@/stores/cart-store";
+import { useWishlistStore } from "@/stores/wishlist-store";
 
 const NAV_LINKS = [
   { name: "Home", href: "/" },
-  { name: "Shop", href: "/products" },
-  { name: "Categories", href: "/categories" },
+  { 
+    name: "Shop", 
+    href: "/products",
+    subItems: [
+      { name: "All Products", href: "/products" },
+      { name: "New Arrivals", href: "/products?sort=new" },
+      { name: "Trending", href: "/products?sort=trending" },
+    ]
+  },
+  { 
+    name: "Categories", 
+    href: "/categories",
+    subItems: [
+      { name: "Electronics", href: "/categories/electronics" },
+      { name: "Fashion", href: "/categories/fashion" },
+      { name: "Home & Living", href: "/categories/home-living" },
+      { name: "Beauty", href: "/categories/beauty" },
+    ]
+  },
   { name: "Deals", href: "/deals" },
 ];
 
@@ -31,19 +50,33 @@ export function CustomerHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openMobileMenu, setOpenMobileMenu] = useState<string | null>(null);
+
+  const toggleMobileMenu = (menu: string) => {
+    setOpenMobileMenu(openMobileMenu === menu ? null : menu);
+  };
+
+  const { getTotalItems } = useCartStore();
+  const { items: wishlistItems } = useWishlistStore();
+
+  const cartItemsCount = mounted ? getTotalItems() : 0;
+  const wishlistCount = mounted ? wishlistItems.length : 0;
 
   useEffect(() => {
+    setMounted(true);
     const token = localStorage.getItem("access_token");
     const userStr = localStorage.getItem("user");
     if (token && userStr) {
       setIsLoggedIn(true);
       try {
         setUser(JSON.parse(userStr));
-      } catch (e) {}
+      } catch (e) { }
     } else {
       setIsLoggedIn(!!localStorage.getItem("userAuth"));
     }
-    
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -61,18 +94,25 @@ export function CustomerHeader() {
     router.push("/");
   };
 
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
-    <header 
+    <header
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300 ease-in-out text-slate-50",
-        isScrolled 
-          ? "bg-slate-950/85 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-slate-900/10 py-2" 
+        isScrolled
+          ? "bg-slate-950/85 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-slate-900/10 py-2"
           : "bg-gradient-to-b from-slate-950/80 to-slate-950/20 backdrop-blur-sm border-b border-transparent py-4"
       )}
     >
       <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between gap-6">
-          
+
           {/* LEFT: Logo & Mobile Menu */}
           <div className="flex items-center gap-4">
             <Sheet>
@@ -91,29 +131,109 @@ export function CustomerHeader() {
                     </span>
                   </SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col gap-6 mt-8">
-                  <div className="relative">
+                <div className="flex flex-col gap-6 mt-6 pb-6 overflow-y-auto max-h-[85vh] scrollbar-none">
+                  {/* SEARCH */}
+                  <form onSubmit={handleSearch} className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                     <Input
+                      type="search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search products..."
-                      className="pl-9 bg-slate-900 border-slate-800 rounded-xl text-slate-200 placeholder:text-slate-500"
+                      className="pl-9 bg-slate-900/50 border-slate-800 rounded-xl text-slate-200 placeholder:text-slate-500 focus-visible:ring-indigo-500/50 h-11"
                     />
+                  </form>
+
+                  {/* PROFILE CARD */}
+                  <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-800">
+                      {isLoggedIn ? (
+                        <img src="https://i.pravatar.cc/150?u=gechexpress_user" alt="Avatar" className="h-full w-full object-cover rounded-full" />
+                      ) : (
+                        <User className="h-5 w-5 text-slate-400" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-100">{isLoggedIn ? user?.name || "Welcome Back!" : "Welcome!"}</h4>
+                      <p className="text-xs text-slate-400">{isLoggedIn ? "View your account profile" : "Sign in to your account"}</p>
+                    </div>
                   </div>
-                  <nav className="flex flex-col gap-2">
-                    {NAV_LINKS.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className={`flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                          pathname === link.href
-                            ? "bg-indigo-500/10 text-indigo-400 shadow-sm border border-indigo-500/20"
-                            : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
-                        }`}
-                      >
-                        {link.name}
+
+                  {/* APPEARANCE */}
+                  <div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3 ml-1">Appearance</h4>
+                    <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-900/40 border border-slate-800/60">
+                      <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-indigo-500/20 text-indigo-400">
+                        <Sun className="h-4 w-4" />
+                      </button>
+                      <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-slate-400 hover:text-slate-200">
+                        <Moon className="h-4 w-4" />
+                      </button>
+                      <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-slate-400 hover:text-slate-200">
+                        <Monitor className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* GET STARTED */}
+                  {!isLoggedIn && (
+                    <div>
+                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3 ml-1">Get Started</h4>
+                      <div className="flex flex-col gap-1">
+                        <Link href="/login" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-900/60 transition-colors">
+                          <LogIn className="h-4 w-4 text-slate-400" />
+                          <span className="text-sm font-medium">Sign In</span>
+                        </Link>
+                        <Link href="/register" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-900/60 transition-colors">
+                          <PlusCircle className="h-4 w-4 text-slate-400" />
+                          <span className="text-sm font-medium">Create Account</span>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* QUICK ACCESS */}
+                  <div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3 ml-1">Quick Access</h4>
+                    <div className="flex flex-col gap-1">
+                      <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-900/60 transition-colors">
+                        <Home className="h-4 w-4 text-slate-400" />
+                        <span className="text-sm font-medium">Home</span>
                       </Link>
-                    ))}
-                  </nav>
+                      <Link href="/products" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-900/60 transition-colors">
+                        <Grid className="h-4 w-4 text-slate-400" />
+                        <span className="text-sm font-medium">All Products</span>
+                      </Link>
+                      <Link href="/cart" className="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-900/60 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <ShoppingCart className="h-4 w-4 text-slate-400" />
+                          <span className="text-sm font-medium">Cart</span>
+                        </div>
+                        {cartItemsCount > 0 && (
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white">
+                            {cartItemsCount}
+                          </span>
+                        )}
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* SHOP CATEGORIES */}
+                  <div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3 ml-1">Shop Categories</h4>
+                    <div className="flex flex-col gap-1">
+                      {NAV_LINKS.find(l => l.name === "Categories")?.subItems?.map((cat) => (
+                        <Link 
+                          key={cat.name} 
+                          href={cat.href} 
+                          className="flex items-center justify-between px-3 py-3 rounded-lg text-slate-300 hover:bg-slate-900/60 transition-colors group"
+                        >
+                          <span className="text-sm font-medium">{cat.name}</span>
+                          <ChevronRight className="h-4 w-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -136,26 +256,25 @@ export function CustomerHeader() {
                   const isActive = pathname === link.href;
                   return (
                     <NavigationMenuItem key={link.href}>
-                      <NavigationMenuLink
+                      <Link 
+                        href={link.href}
                         className={cn(
-                          navigationMenuTriggerStyle(),
-                          "group bg-transparent hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white data-[active]:bg-white/10 data-[active]:text-white relative text-sm font-medium transition-colors duration-300",
+                          "group relative inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium transition-colors hover:text-white focus:text-white focus:outline-none data-[active]:text-white duration-300 !bg-transparent hover:!bg-transparent focus:!bg-transparent data-[active]:!bg-transparent",
                           isActive ? "text-white" : "text-slate-300"
                         )}
-                        active={isActive}
-                        render={<Link href={link.href} />}
+                        data-active={isActive ? "" : undefined}
                       >
                         {link.name}
                         {/* Animated underline */}
-                        <span 
+                        <span
                           className={cn(
                             "absolute inset-x-4 -bottom-[1px] h-[2px] rounded-t-full transition-all duration-300 ease-out origin-center",
-                            isActive 
-                              ? "bg-indigo-500 shadow-[0_-2px_10px_rgba(99,102,241,0.5)] scale-x-100" 
+                            isActive
+                              ? "bg-indigo-500 shadow-[0_-2px_10px_rgba(99,102,241,0.5)] scale-x-100"
                               : "bg-white/40 scale-x-0 opacity-0 group-hover:opacity-100 group-hover:scale-x-100"
-                          )} 
+                          )}
                         />
-                      </NavigationMenuLink>
+                      </Link>
                     </NavigationMenuItem>
                   );
                 })}
@@ -166,14 +285,16 @@ export function CustomerHeader() {
           {/* RIGHT: Actions */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Search - Desktop */}
-            <div className="hidden md:flex items-center relative mr-2 group">
+            <form onSubmit={handleSearch} className="hidden md:flex items-center relative mr-2 group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
               <input
                 type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products..."
                 className="h-10 w-[200px] lg:w-[260px] rounded-full bg-white/5 border border-white/10 pl-11 pr-4 text-sm text-slate-100 outline-none transition-all duration-300 focus:w-[240px] lg:focus:w-[320px] hover:bg-white/10 focus:bg-white/10 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/20 placeholder:text-slate-400"
               />
-            </div>
+            </form>
 
             {/* Search - Mobile */}
             <button className="md:hidden flex h-10 w-10 items-center justify-center rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors">
@@ -183,9 +304,8 @@ export function CustomerHeader() {
             <ThemeToggle className="text-slate-300 hover:text-white hover:bg-white/10 h-10 w-10" />
 
             {/* Wishlist */}
-            <Link href="/customer/wishlist" className="hidden sm:flex h-10 w-10 items-center justify-center rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors relative group">
+            <Link href="/wishlist" className="hidden sm:flex h-10 w-10 items-center justify-center rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors relative group">
               <Heart className="h-4 w-4 transition-transform group-hover:scale-110" />
-              <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-rose-500 ring-2 ring-slate-950" />
             </Link>
 
             {/* User Account / Avatar */}
@@ -236,7 +356,7 @@ export function CustomerHeader() {
             {/* Cart Button */}
             <Link href="/cart" className="ml-2 flex items-center justify-center h-10 px-5 gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 transition-all hover:shadow-indigo-500/40 hover:-translate-y-0.5">
               <ShoppingCart className="h-4 w-4" />
-              <span className="font-semibold text-sm">0</span>
+              <span className="font-semibold text-sm">{cartItemsCount}</span>
             </Link>
           </div>
 
