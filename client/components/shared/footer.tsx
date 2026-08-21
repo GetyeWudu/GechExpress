@@ -7,31 +7,31 @@ export function Footer() {
   return (
     <footer className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
       <div className="container mx-auto px-4 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand & Contact */}
-          <div className="space-y-4">
+          <div className="col-span-2 lg:col-span-1 space-y-4">
             <h3 className="text-xl font-bold tracking-tight">GechExpress</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
               Your one-stop destination for premium products and exceptional shopping experience.
             </p>
             <div className="space-y-2 pt-2">
               <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                <MapPin className="h-4 w-4" />
-                <span>123 Commerce St, Tech City</span>
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span>Bole, Addis Ababa, Ethiopia</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                <Phone className="h-4 w-4" />
-                <span>+1 (555) 123-4567</span>
+                <Phone className="h-4 w-4 shrink-0" />
+                <span>+251 911 23 45 67</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                <Mail className="h-4 w-4" />
+                <Mail className="h-4 w-4 shrink-0" />
                 <span>support@gechexpress.com</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="col-span-1 space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -58,8 +58,8 @@ export function Footer() {
           </div>
 
           {/* Customer Service */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider">Customer Service</h3>
+          <div className="col-span-1 space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider">Support</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/faq" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
@@ -68,24 +68,24 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/shipping" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
-                  Shipping & Returns
+                  Shipping
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
-                  Terms & Conditions
+                  Terms
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
-                  Privacy Policy
+                  Privacy
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Newsletter */}
-          <div className="space-y-4">
+          <div className="col-span-2 lg:col-span-1 space-y-4 mt-4 lg:mt-0">
             <h3 className="text-sm font-semibold uppercase tracking-wider">Newsletter</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
               Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.

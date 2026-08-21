@@ -1,5 +1,3 @@
-import { SellerSidebar } from "@/components/seller/seller-sidebar";
-import { SellerHeader } from "@/components/seller/seller-header";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +12,7 @@ const PROMOTIONS = [
 
 export default function PromotionsPage() {
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
-      <SellerSidebar />
-      <div className="flex flex-1 flex-col lg:pl-64">
-        <SellerHeader />
-        
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-7xl space-y-8">
             
             <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/50 overflow-hidden">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800 gap-4">
@@ -81,8 +73,5 @@ export default function PromotionsPage() {
             </div>
 
           </div>
-        </main>
-      </div>
-    </div>
   );
 }

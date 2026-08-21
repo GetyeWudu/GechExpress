@@ -1,80 +1,151 @@
-import { StockStatus, StockLevel } from "./stock-status";
+"use client";
+
+import { useState } from "react";
+import { useSellerStore } from "@/stores/seller-store";
+import { Search, SlidersHorizontal, Edit2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Edit, RefreshCw } from "lucide-react";
-import Image from "next/image";
-
-interface InventoryItem {
-  id: string;
-  sku: string;
-  name: string;
-  image: string;
-  price: number;
-  stockLevel: StockLevel;
-  quantity: number;
-  lastUpdated: string;
-}
-
-const INVENTORY: InventoryItem[] = [
-  { id: "P1", sku: "SKU-9012", name: "Premium Wireless Headphones", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=200&auto=format&fit=crop", price: 299.99, stockLevel: "in_stock", quantity: 145, lastUpdated: "2 hours ago" },
-  { id: "P2", sku: "SKU-9013", name: "Minimalist Mechanical Keyboard", image: "https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=200&auto=format&fit=crop", price: 129.99, stockLevel: "low_stock", quantity: 8, lastUpdated: "1 day ago" },
-  { id: "P3", sku: "SKU-9014", name: "Ergonomic Office Chair", image: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?q=80&w=200&auto=format&fit=crop", price: 199.50, stockLevel: "out_of_stock", quantity: 0, lastUpdated: "3 days ago" },
-];
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export function InventoryTable() {
+  const { products } = useSellerStore();
+  const [search, setSearch] = useState("");
+
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(search.toLowerCase()) ||
+      product.sku.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/50 overflow-hidden">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800 gap-4">
-        <div>
-          <h2 className="font-semibold text-slate-900 dark:text-white text-lg">Inventory Management</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Track and update your product stock levels.</p>
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="relative w-full sm:w-[350px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Search by product name or SKU..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+          />
         </div>
-        <Button variant="outline" className="gap-2 border-slate-200 dark:border-slate-700">
-          <RefreshCw className="h-4 w-4" />
-          Sync Inventory
-        </Button>
+        
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto border-slate-200 dark:border-slate-800">
+            <SlidersHorizontal className="h-4 w-4 mr-2" />
+            Filters
+          </Button>
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-slate-50 text-slate-500 dark:bg-slate-900/50 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-xs">
-            <tr>
-              <th className="px-6 py-4 font-medium">Product</th>
-              <th className="px-6 py-4 font-medium">SKU</th>
-              <th className="px-6 py-4 font-medium">Price</th>
-              <th className="px-6 py-4 font-medium">Stock Status</th>
-              <th className="px-6 py-4 font-medium">Last Updated</th>
-              <th className="px-6 py-4 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-            {INVENTORY.map((item) => (
-              <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-10 w-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0">
-                      <Image src={item.image} alt={item.name} fill className="object-cover" />
-                    </div>
-                    <span className="font-medium text-slate-900 dark:text-white line-clamp-2 max-w-[200px]">
-                      {item.name}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 font-mono text-xs">{item.sku}</td>
-                <td className="px-6 py-4 text-slate-900 dark:text-white font-medium">${item.price.toFixed(2)}</td>
-                <td className="px-6 py-4">
-                  <StockStatus status={item.stockLevel} quantity={item.quantity} />
-                </td>
-                <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{item.lastUpdated}</td>
-                <td className="px-6 py-4 text-right">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">
-                    <Edit className="h-4 w-4" />
-                    <span className="sr-only">Edit stock</span>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-slate-50 dark:bg-slate-900/50">
+              <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
+                <TableHead className="w-[300px] font-semibold text-slate-600 dark:text-slate-300">Product</TableHead>
+                <TableHead className="font-semibold text-slate-600 dark:text-slate-300">SKU</TableHead>
+                <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right">Available Stock</TableHead>
+                <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right">Reserved</TableHead>
+                <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-center">Status</TableHead>
+                <TableHead className="text-right font-semibold text-slate-600 dark:text-slate-300">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredProducts.map((product) => {
+                const isLowStock = product.stock > 0 && product.stock <= 20;
+                const isOutOfStock = product.stock === 0;
+
+                return (
+                  <TableRow key={product.id} className="border-slate-200 dark:border-slate-800 group">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
+                          {product.image ? (
+                            <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center text-slate-400 font-medium text-xs">No img</div>
+                          )}
+                        </div>
+                        <div className="flex flex-col max-w-[200px]">
+                          <span className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{product.name}</span>
+                          <span className="text-xs text-slate-500 truncate">{product.category}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <code className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-300">
+                        {product.sku}
+                      </code>
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      <span className={
+                        isOutOfStock ? "text-rose-600 dark:text-rose-500 font-bold" : 
+                        isLowStock ? "text-amber-600 dark:text-amber-500 font-bold" : 
+                        "text-slate-900 dark:text-slate-100"
+                      }>
+                        {product.stock}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right text-slate-500">
+                      {Math.floor(Math.random() * 5)} {/* Dummy reserved stock */}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge 
+                        variant={isOutOfStock ? "destructive" : "secondary"}
+                        className={
+                          isOutOfStock ? "bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-900" :
+                          isLowStock ? "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900 hover:bg-amber-100" :
+                          "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900 hover:bg-emerald-100"
+                        }
+                      >
+                        {isOutOfStock ? "Out of Stock" : isLowStock ? "Low Stock" : "In Stock"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="sr-only">Open menu</span>
+                            <Edit2 className="h-4 w-4 text-slate-500" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[160px]">
+                          <DropdownMenuItem>Adjust Stock</DropdownMenuItem>
+                          <DropdownMenuItem>View History</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/50">Mark Out of Stock</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {filteredProducts.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                    No products found matching your search.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

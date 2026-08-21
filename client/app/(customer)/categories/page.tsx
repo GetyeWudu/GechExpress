@@ -15,7 +15,7 @@ const CATEGORIES = [
 
 export default function CategoriesPage() {
   return (
-    <div className="container mx-auto px-4 py-12 min-h-screen">
+    <div className="container mx-auto px-4 pt-28 pb-12 sm:pt-36 min-h-screen">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="max-w-2xl">
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">

@@ -24,7 +24,7 @@ export default function CartPage() {
 
   if (!hasItems) {
     return (
-      <div className="container mx-auto px-4 py-16 md:py-32 flex flex-col items-center justify-center text-center">
+      <div className="container mx-auto px-4 pt-32 pb-16 md:pt-48 md:pb-32 flex flex-col items-center justify-center text-center">
         <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-900 mb-6 text-slate-400">
           <ShoppingCart className="h-12 w-12" />
         </div>
@@ -41,18 +41,18 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 pb-20">
-      <div className="container mx-auto px-4 pt-4 md:pt-8 max-w-[1200px]">
+      <div className="container mx-auto px-4 pt-28 pb-12 sm:pt-32 max-w-[1200px]">
         
         {/* Top Header */}
-        <div className="flex justify-between items-start mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-1" style={{ fontFamily: "serif" }}>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1" style={{ fontFamily: "serif" }}>
               Shopping Cart
             </h1>
-            <p className="text-slate-500 text-sm">{items.length} items</p>
+            <p className="text-slate-500 text-xs sm:text-sm">{items.length} items</p>
           </div>
-          <div className="flex items-center gap-2 bg-[#fdf8ed] dark:bg-[#332c1c] text-[#c69a53] px-4 py-1.5 rounded-full text-xs font-semibold border border-[#faecd8] dark:border-[#52442a]">
-             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4"/><path d="m4.93 10.93 2.83-2.83"/><path d="M2 18h4"/><path d="m4.93 25.07 2.83 2.83"/><path d="M12 30v-4"/><path d="m19.07 25.07-2.83 2.83"/><path d="M22 18h-4"/><path d="m19.07 10.93-2.83-2.83"/></svg>
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-[#fdf8ed] dark:bg-[#332c1c] text-[#c69a53] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold border border-[#faecd8] dark:border-[#52442a] whitespace-nowrap">
+             <svg width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4"/><path d="m4.93 10.93 2.83-2.83"/><path d="M2 18h4"/><path d="m4.93 25.07 2.83 2.83"/><path d="M12 30v-4"/><path d="m19.07 25.07-2.83 2.83"/><path d="M22 18h-4"/><path d="m19.07 10.93-2.83-2.83"/></svg>
              Free Shipping Unlocked
           </div>
         </div>

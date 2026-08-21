@@ -20,7 +20,7 @@ export default function WishlistPage() {
   const hasItems = items.length > 0;
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12 min-h-[70vh]">
+    <div className="container mx-auto px-4 pt-28 pb-8 md:pt-36 md:pb-12 min-h-[70vh]">
       <div className="mb-8 border-b border-slate-200 pb-8 dark:border-slate-800">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl flex items-center gap-3">
           <Heart className="h-8 w-8 text-rose-500 fill-rose-500" />
@@ -54,11 +54,11 @@ export default function WishlistPage() {
               {items.length} items saved
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-6">
             {items
               .filter(item => typeof item === 'object' && item !== null && item.id) // Filter legacy strings
               .map((item) => (
-              <div key={item.id} className="relative group">
+              <div key={item.id} className="relative group flex flex-col [&>div]:flex-1 [&>div]:w-full">
                 <ProductCard {...item} />
                 <Button 
                   onClick={() => toggleItem(item)}

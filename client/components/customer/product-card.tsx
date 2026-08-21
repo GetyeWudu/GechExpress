@@ -93,10 +93,10 @@ export function ProductCard({
         variant="ghost"
         size="icon"
         onClick={handleToggleWishlist}
-        className={`absolute right-2 top-2 z-10 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm transition-opacity opacity-0 group-hover:opacity-100 dark:bg-slate-900/80 ${
+        className={`absolute right-2 top-2 z-10 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm transition-opacity md:opacity-0 md:group-hover:opacity-100 dark:bg-slate-900/80 ${
           isWishlisted 
             ? "text-rose-600 dark:text-rose-500 opacity-100" 
-            : "text-slate-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-500"
+            : "text-slate-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-500 opacity-100"
         }`}
       >
         <Heart className={`h-4 w-4 ${isWishlisted ? "fill-current" : ""}`} />
@@ -104,41 +104,41 @@ export function ProductCard({
       </Button>
 
       {/* Image */}
-      <Link href={`/products/${slug}`} className="relative aspect-square overflow-hidden rounded-t-lg bg-slate-100 dark:bg-slate-900">
+      <Link href={`/products/${slug}`} className="relative h-[130px] sm:h-[180px] w-full overflow-hidden rounded-t-lg bg-slate-100 dark:bg-slate-900">
         <Image
           src={image || "/placeholder.svg"}
           alt={name || "Product image"}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-300 active:scale-105 md:group-hover:scale-105"
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
       </Link>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4 bg-white dark:bg-slate-950 rounded-b-xl border-t border-slate-100 dark:border-slate-800">
-        <div className="mb-2 flex items-center gap-1.5 font-serif">
-          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-          <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+      <div className="flex flex-1 flex-col p-1.5 sm:p-2 bg-white dark:bg-slate-950 rounded-b-xl border-t border-slate-100 dark:border-slate-800">
+        <div className="mb-1 flex items-center gap-1 font-serif">
+          <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-amber-400 text-amber-400" />
+          <span className="text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-300">
             {(rating || 0).toFixed(1)}
           </span>
-          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+          <span className="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500 font-medium">
             ({reviewsCount || 0})
           </span>
         </div>
 
-        <Link href={`/products/${slug}`} className="flex-1 mt-1">
-          <h3 className="line-clamp-2 text-[13px] sm:text-[15px] font-bold text-slate-900 hover:text-primary dark:text-slate-100 dark:hover:text-primary font-serif leading-snug">
+        <Link href={`/products/${slug}`} className="flex-1 mt-0.5">
+          <h3 className="line-clamp-2 text-[11px] sm:text-[13px] font-bold text-slate-900 hover:text-primary dark:text-slate-100 dark:hover:text-primary font-serif leading-snug">
             {name}
           </h3>
         </Link>
 
-        <div className="mt-4 sm:mt-5 flex items-end justify-between gap-2 font-serif">
+        <div className="mt-1.5 flex items-end justify-between gap-1.5 font-serif">
           <div className="flex flex-col">
-            <span className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+            <span className="text-[12px] sm:text-[14px] font-black text-slate-900 dark:text-white tracking-tight">
               ETB {(price || 0).toFixed(2)}
             </span>
             {originalPrice && (
-              <span className="text-[10px] sm:text-xs text-slate-400 line-through dark:text-slate-500 font-semibold mt-0.5">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 line-through dark:text-slate-500 font-semibold mt-0.5">
                 ETB {(originalPrice || 0).toFixed(2)}
               </span>
             )}
@@ -146,9 +146,9 @@ export function ProductCard({
           <Button 
             size="sm" 
             onClick={handleAddToCart}
-            className="h-7 sm:h-8 rounded-full px-3 sm:px-4 text-[10px] sm:text-xs shadow-md bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 transition-colors font-bold tracking-wide shrink-0"
+            className="h-5 sm:h-6 rounded-full px-1.5 sm:px-2 text-[8px] sm:text-[9px] shadow-sm bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 transition-colors font-bold tracking-wide shrink-0"
           >
-            <ShoppingCart className="mr-1 sm:mr-1.5 h-3 w-3 sm:h-3.5 sm:w-3.5" />
+            <ShoppingCart className="mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" />
             Add
           </Button>
         </div>

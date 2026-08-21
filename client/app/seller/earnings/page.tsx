@@ -1,5 +1,3 @@
-import { SellerSidebar } from "@/components/seller/seller-sidebar";
-import { SellerHeader } from "@/components/seller/seller-header";
 import { EarningsCard } from "@/components/seller/earnings-card";
 import { EarningsTable } from "@/components/seller/earnings-table";
 import { Button } from "@/components/ui/button";
@@ -7,13 +5,7 @@ import { Download, Wallet } from "lucide-react";
 
 export default function EarningsPage() {
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
-      <SellerSidebar />
-      <div className="flex flex-1 flex-col lg:pl-64">
-        <SellerHeader />
-        
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-7xl space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Earnings & Payouts</h1>
@@ -60,8 +52,5 @@ export default function EarningsPage() {
 
             <EarningsTable />
           </div>
-        </main>
-      </div>
-    </div>
   );
 }

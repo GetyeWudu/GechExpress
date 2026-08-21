@@ -35,19 +35,19 @@ export function CategoryCard({ id, name, slug, images, itemCount }: CategoryCard
       </div>
       
       {/* Footer / Info Panel */}
-      <div className="flex items-center justify-between p-3 sm:p-4 bg-white dark:bg-slate-950">
+      <div className="flex items-center justify-between p-2 sm:p-3 bg-white dark:bg-slate-950">
         <div className="flex flex-col">
-          <h3 className="font-bold text-[13px] sm:text-[15px] text-slate-900 dark:text-slate-100 leading-tight font-serif group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+          <h3 className="font-bold text-[11px] sm:text-[14px] text-slate-900 dark:text-slate-100 leading-tight font-serif group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
             {name}
           </h3>
           {itemCount !== undefined && (
-            <p className="text-[10px] sm:text-[12px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-[9px] sm:text-[12px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
               {itemCount} {itemCount === 1 ? 'Item' : 'Items'}
             </p>
           )}
         </div>
-        <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 transition-all duration-300 group-hover:bg-indigo-500 group-hover:text-white shrink-0 shadow-sm border border-slate-200 dark:border-slate-800">
-          <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <div className="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 transition-all duration-300 group-hover:bg-indigo-500 group-hover:text-white shrink-0 shadow-sm border border-slate-200 dark:border-slate-800">
+          <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
         </div>
       </div>
     </Link>

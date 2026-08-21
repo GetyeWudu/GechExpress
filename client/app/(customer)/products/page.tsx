@@ -12,7 +12,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Search } from "lucide-react";
 
 const PRODUCTS = [
   {
@@ -85,24 +85,23 @@ const PRODUCTS = [
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
-  const { category } = await searchParams;
+  const { category, q } = await searchParams;
   
-  // Filter products by category if provided
-  const filteredProducts = category 
-    ? PRODUCTS.filter(p => p.category === category)
-    : PRODUCTS;
+  // Filter products by category and search query if provided
+  const filteredProducts = PRODUCTS.filter(p => {
+    if (category && p.category !== category) return false;
+    if (q && !p.name.toLowerCase().includes(q.toLowerCase())) return false;
+    return true;
+  });
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
+    <div className="container mx-auto px-4 py-8 pt-24 md:py-12 md:pt-28">
       {/* Page Header */}
       <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-8 dark:border-slate-800">
         <h1 className="text-3xl font-black font-serif tracking-tight text-slate-900 dark:text-white md:text-4xl">
           All Products
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-serif text-lg">
-          Browse our entire collection of premium items.
-        </p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -114,7 +113,21 @@ export default async function ProductsPage({
         {/* Main Content */}
         <div className="flex-1">
           {/* Controls Bar */}
-          <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mb-6 flex flex-col gap-4">
+            {/* Search Bar */}
+            <form method="GET" action="/products" className="relative w-full">
+              {category && <input type="hidden" name="category" value={category} />}
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="search"
+                name="q"
+                defaultValue={q || ""}
+                placeholder="Search products..."
+                className="h-11 w-full rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 pl-11 pr-4 text-sm outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              />
+            </form>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4 w-full sm:w-auto">
               {/* Mobile Filter Button */}
               <Sheet>
@@ -153,9 +166,10 @@ export default async function ProductsPage({
               </Select>
             </div>
           </div>
+          </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2 sm:gap-4">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <ProductCard key={product.id} {...product} />

@@ -52,7 +52,7 @@ export function HeroSlider() {
   const slide = HERO_SLIDES[current];
 
   return (
-    <section className="relative w-full h-[calc(100vh-4rem)] overflow-hidden bg-background">
+    <section className="relative w-full h-[60vh] md:h-[calc(100vh-4rem)] overflow-hidden bg-slate-950">
       {/* Background Images */}
       {HERO_SLIDES.map((s, i) => (
         <div

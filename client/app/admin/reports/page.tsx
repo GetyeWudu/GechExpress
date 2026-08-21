@@ -1,15 +1,8 @@
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { AdminHeader } from "@/components/admin/admin-header";
 import { ReportFilters } from "@/components/admin/report-filters";
 
 export default function AdminReportsPage() {
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
-      <AdminSidebar />
-      <div className="flex flex-1 flex-col lg:pl-64">
-        <AdminHeader />
-        
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+    
           <div className="mx-auto max-w-7xl space-y-6">
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Platform Reports</h1>
@@ -25,8 +18,5 @@ export default function AdminReportsPage() {
               <p className="mt-2 text-slate-500 dark:text-slate-400">Your generated data will appear here.</p>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
-  );
+        );
 }
